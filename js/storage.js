@@ -2,13 +2,13 @@
 
 const KEY_POLLA = "POLLA_MUNDIALISTA_2026";
 
-// Obtiene el estado actual de la polla o inicializa la estructura si está vacía
+// Obtiene el estado actual (primero intenta de LocalStorage por velocidad)
 function obtenerEstadoGlobal() {
     let datos = localStorage.getItem(KEY_POLLA);
     if (!datos) {
         const estadoInicial = {
-            resultados_reales: {}, // Estructura: {"Grupo A": ["mx", "za"], ...}
-            jugadores: []          // Estructura: [{id, nombre, puntaje_total, predicciones: {}}]
+            resultados_reales: {}, 
+            jugadores: []          
         };
         guardarEstadoGlobal(estadoInicial);
         return estadoInicial;
@@ -16,7 +16,16 @@ function obtenerEstadoGlobal() {
     return JSON.parse(datos);
 }
 
-// Guarda los datos serializados en formato string JSON
+// Guarda en LocalStorage Y ADEMÁS lo sube a Firebase en tiempo real
 function guardarEstadoGlobal(estado) {
+    // 1. Guardar localmente como antes
     localStorage.setItem(KEY_POLLA, JSON.stringify(estado));
+
+    // 2. Guardar en la nube (Firebase Realtime Database) usando el puente global
+    if (window.db && window.dbRef && window.dbSet) {
+        const rutaBase = window.dbRef(window.db, "polla_datos");
+        window.dbSet(rutaBase, estado)
+            .then(() => console.log("☁️ Sincronizado con Firebase con éxito."))
+            .catch(error => console.error("❌ Error al sincronizar con Firebase:", error));
+    }
 }

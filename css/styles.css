@@ -417,3 +417,49 @@ summary:hover { background-color: #f3f4f6; }
     .lista-paises-voto { grid-template-columns: 1fr; }
     .ranking-table th:nth-child(4), .ranking-table td:nth-child(4) { display: none; }
 }
+
+/* ===================================================
+   ESTILOS PARA EL BOTÓN DE LIMPIAR GRUPO (ADMIN)
+   =================================================== */
+
+/* Contenedor del título y el botón para alinearlos en la misma línea */
+.grupo-real-row {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px dashed #e5e7eb;
+}
+
+/* Fuerza a que el título H4 y el botón se vayan a los extremos */
+.grupo-real-row h4 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin: 15px 0 10px 0;
+    font-size: 1.1rem;
+}
+
+/* Estilo moderno y limpio para el botón de limpiar */
+.btn-limpiar-grupo {
+    background-color: transparent;
+    color: #ef4444; /* Color rojo de alerta/borrado */
+    border: 1px solid #fca5a5;
+    padding: 4px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Efecto cuando pasas el mouse por encima */
+.btn-limpiar-grupo:hover {
+    background-color: #fef2f2;
+    border-color: #ef4444;
+    transform: scale(1.03);
+}
+
+/* Efecto cuando haces clic */
+.btn-limpiar-grupo:active {
+    transform: scale(0.98);
+}

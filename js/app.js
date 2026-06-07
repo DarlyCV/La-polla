@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     actualizarRankingUI();
     inicializarResultadosRealesAdmin();
     configurarRastreoCambiosManual();
+    configurarLimpiezaGruposAdmin(); // <- Activamos la escucha para el botón de limpiar
 });
 
 // 1. MANEJO DE PESTAÑAS (TABS) CON VALIDACIÓN DE GUARDADO
@@ -279,6 +280,7 @@ function habilitarModificacion(button, nombreGrupo) {
 }
 
 // 6. RESULTADOS REALES (ADMIN) Y CÁLCULO DE PUNTOS
+// MODIFICADO CON ÉXITO: Integra el título H4 alineado y el botón dinámico de Limpiar Grupo
 function inicializarResultadosRealesAdmin() {
     const contenedor = document.getElementById("lista-grupos-reales");
     if (!contenedor) return;
@@ -290,11 +292,21 @@ function inicializarResultadosRealesAdmin() {
         const paises = MUNDIAL_2026[nombreGrupo];
         const realesGuardados = estado.resultados_reales[nombreGrupo] || [];
         const grupoId = nombreGrupo.replace(" ", "");
+        
+        // Extraemos solo la letra del grupo (ej: de "Grupo A" saca "A")
+        const letraGrupo = nombreGrupo.split(" ")[1] || "";
 
         const div = document.createElement("div");
         div.className = "grupo-real-row";
         
-        let html = `<h4 style="margin: 10px 0 5px 0; color: var(--primary-color);">${nombreGrupo}</h4><div id="real-container-${grupoId}" style="display:flex; gap:15px; flex-wrap:wrap;">`;
+        // Aquí inyectamos el título H4 configurado con flexbox y el botón de borrado
+        let html = `
+            <h4 style="margin: 10px 0 5px 0; color: var(--primary-color); display: flex; justify-content: space-between; align-items: center;">
+                <span>${nombreGrupo}</span>
+                <button type="button" class="btn-limpiar-grupo" data-grupo="${letraGrupo}">Limpiar Grupo</button>
+            </h4>
+            <div id="real-container-${grupoId}" style="display:flex; gap:15px; flex-wrap:wrap;">`;
+            
         paises.forEach(p => {
             const checked = realesGuardados.includes(p.id) ? "checked" : "";
             html += `
@@ -480,4 +492,34 @@ function descargarReporteExcel() {
     document.body.appendChild(link);
     link.click(); 
     document.body.removeChild(link); 
+}
+
+// ==========================================
+// NUEVA FUNCIÓN AGREGADA DE FORMA SEGURA
+// ==========================================
+function configurarLimpiezaGruposAdmin() {
+    document.addEventListener('click', function(e) {
+        // Evalúa si el clic ocurrió en un botón de limpiar grupo
+        if (e.target && e.target.classList.contains('btn-limpiar-grupo')) {
+            const letraGrupo = e.target.getAttribute('data-grupo'); // Captura "A", "B", "C" o "D"
+            
+            if (letraGrupo) {
+                // Sigue la nomenclatura exacta de ID creada en inicializarResultadosRealesAdmin
+                const contenedorId = `real-container-Grupo${letraGrupo}`;
+                const contenedorReal = document.getElementById(contenedorId);
+                
+                if (contenedorReal) {
+                    // Desmarca los elementos sin alterar la estructura reactiva
+                    const checkboxes = contenedorReal.querySelectorAll('input[type="checkbox"]');
+                    checkboxes.forEach(chk => {
+                        chk.checked = false;
+                    });
+                    
+                    // Activamos la bandera de cambios pendientes para advertir al admin antes de salir
+                    haHabidoCambios = true;
+                    console.log(`🧹 Checks desmarcados quirúrgicamente para el Grupo ${letraGrupo}`);
+                }
+            }
+        }
+    });
 }
