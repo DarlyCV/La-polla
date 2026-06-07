@@ -8,7 +8,14 @@ let paisesSeleccionadosTemporales = [];
 let haHabidoCambios = false;
 
 // Inicialización del sistema al cargar el DOM
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+    console.log("⏳ Esperando carga de datos de Firebase...");
+    
+    // Cargar datos de Firebase primero
+    await cargarDatosDeFirebase();
+    
+    console.log("✅ Datos cargados. Inicializando UI...");
+    
     actualizarSelectorJugadores();
     actualizarRankingUI();
     inicializarResultadosRealesAdmin();

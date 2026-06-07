@@ -29,3 +29,34 @@ function guardarEstadoGlobal(estado) {
             .catch(error => console.error("❌ Error al sincronizar con Firebase:", error));
     }
 }
+
+// Carga datos de Firebase al iniciar
+function cargarDatosDeFirebase() {
+    return new Promise((resolve) => {
+        // Esperamos a que Firebase esté disponible
+        if (!window.db || !window.dbRef || !window.dbGet || !window.dbChild) {
+            console.warn("⚠️ Firebase no está disponible aún");
+            resolve();
+            return;
+        }
+
+        const rutaBase = window.dbRef(window.db, "polla_datos");
+        window.dbGet(window.dbChild(rutaBase))
+            .then((snapshot) => {
+                if (snapshot.exists()) {
+                    const datosFirebase = snapshot.val();
+                    console.log("📥 Datos cargados desde Firebase:", datosFirebase);
+                    // Guardar en localStorage para acceso rápido
+                    localStorage.setItem(KEY_POLLA, JSON.stringify(datosFirebase));
+                    resolve(datosFirebase);
+                } else {
+                    console.log("📭 No hay datos en Firebase aún");
+                    resolve();
+                }
+            })
+            .catch((error) => {
+                console.error("❌ Error al cargar de Firebase:", error);
+                resolve(); // Continúa incluso si hay error
+            });
+    });
+}
