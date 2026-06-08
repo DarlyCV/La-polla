@@ -16,6 +16,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     console.log("✅ Datos cargados. Inicializando UI...");
     
+    // Reparar estructura de datos si es necesario (para datos antiguos)
+    let estado = obtenerEstadoGlobal();
+    let necesitaReparar = false;
+    
+    estado.jugadores.forEach(jugador => {
+        if (!jugador.predicciones) {
+            jugador.predicciones = {};
+            necesitaReparar = true;
+        }
+        Object.keys(MUNDIAL_2026).forEach(grupo => {
+            if (!jugador.predicciones[grupo]) {
+                jugador.predicciones[grupo] = [];
+                necesitaReparar = true;
+            }
+        });
+    });
+    
+    if (necesitaReparar) {
+        console.log("🔧 Reparando estructura de datos...");
+        guardarEstadoGlobal(estado);
+    }
+    
     actualizarSelectorJugadores();
     actualizarRankingUI();
     inicializarResultadosRealesAdmin();
@@ -79,11 +101,17 @@ function registrarJugador() {
         return;
     }
 
+    // Inicializar predicciones con todos los grupos vacíos
+    const predicciones = {};
+    Object.keys(MUNDIAL_2026).forEach(grupo => {
+        predicciones[grupo] = [];
+    });
+
     const nuevoJugador = {
         id: Date.now(),
         nombre: nombre,
         puntaje_total: 0,
-        predicciones: {}
+        predicciones: predicciones
     };
 
     estado.jugadores.push(nuevoJugador);
@@ -156,6 +184,18 @@ function cargarPrediccionesJugador() {
 
     const estado = obtenerEstadoGlobal();
     const jugador = estado.jugadores.find(j => j.id == idJugadorActual);
+
+    if (!jugador) {
+        console.error("❌ Jugador no encontrado");
+        return;
+    }
+
+    // Asegurar que el jugador tiene predicciones para todos los grupos
+    Object.keys(MUNDIAL_2026).forEach(grupo => {
+        if (!jugador.predicciones[grupo]) {
+            jugador.predicciones[grupo] = [];
+        }
+    });
 
     nombreTrabajoSpan.textContent = jugador.nombre;
     contenedorGlobal.classList.remove("hidden");
