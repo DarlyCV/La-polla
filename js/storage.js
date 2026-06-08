@@ -21,42 +21,57 @@ function guardarEstadoGlobal(estado) {
     // 1. Guardar localmente como antes
     localStorage.setItem(KEY_POLLA, JSON.stringify(estado));
 
-    // 2. Guardar en la nube (Firebase Realtime Database) usando el puente global
-    if (window.db && window.dbRef && window.dbSet) {
-        const rutaBase = window.dbRef(window.db, "polla_datos");
-        window.dbSet(rutaBase, estado)
-            .then(() => console.log("☁️ Sincronizado con Firebase con éxito."))
-            .catch(error => console.error("❌ Error al sincronizar con Firebase:", error));
+    // 2. Guardar en la nube (Firebase Realtime Database) de forma DIRECTA
+    if (window.firebaseDb) {
+        try {
+            window.firebaseDb.ref("polla_datos").set(estado)
+                .then(() => console.log("☁️ Sincronizado con Firebase con éxito."))
+                .catch(error => console.error("❌ Error al sincronizar con Firebase:", error));
+        } catch (error) {
+            console.error("❌ Error en guardarEstadoGlobal:", error);
+        }
+    } else {
+        console.warn("⚠️ Firebase no está disponible aún");
     }
 }
 
 // Carga datos de Firebase al iniciar
 function cargarDatosDeFirebase() {
     return new Promise((resolve) => {
-        // Esperamos a que Firebase esté disponible
-        if (!window.db || !window.dbRef || !window.dbGet || !window.dbChild) {
-            console.warn("⚠️ Firebase no está disponible aún");
-            resolve();
-            return;
-        }
-
-        const rutaBase = window.dbRef(window.db, "polla_datos");
-        window.dbGet(window.dbChild(rutaBase))
-            .then((snapshot) => {
-                if (snapshot.exists()) {
-                    const datosFirebase = snapshot.val();
-                    console.log("📥 Datos cargados desde Firebase:", datosFirebase);
-                    // Guardar en localStorage para acceso rápido
-                    localStorage.setItem(KEY_POLLA, JSON.stringify(datosFirebase));
-                    resolve(datosFirebase);
-                } else {
-                    console.log("📭 No hay datos en Firebase aún");
+        // Esperamos a que Firebase esté disponible (max 10 segundos)
+        let intentos = 0;
+        const intervalo = setInterval(() => {
+            intentos++;
+            if (window.firebaseDb) {
+                clearInterval(intervalo);
+                
+                try {
+                    window.firebaseDb.ref("polla_datos").once('value')
+                        .then((snapshot) => {
+                            if (snapshot.exists()) {
+                                const datosFirebase = snapshot.val();
+                                console.log("📥 Datos cargados desde Firebase:", datosFirebase);
+                                // Guardar en localStorage para acceso rápido
+                                localStorage.setItem(KEY_POLLA, JSON.stringify(datosFirebase));
+                                resolve(datosFirebase);
+                            } else {
+                                console.log("📭 No hay datos en Firebase aún");
+                                resolve();
+                            }
+                        })
+                        .catch((error) => {
+                            console.error("❌ Error al cargar de Firebase:", error);
+                            resolve(); // Continúa incluso si hay error
+                        });
+                } catch (error) {
+                    console.error("❌ Error en cargarDatosDeFirebase:", error);
                     resolve();
                 }
-            })
-            .catch((error) => {
-                console.error("❌ Error al cargar de Firebase:", error);
-                resolve(); // Continúa incluso si hay error
-            });
+            } else if (intentos > 100) { // 100 * 100ms = 10 segundos
+                clearInterval(intervalo);
+                console.warn("⚠️ Firebase no disponible después de 10 segundos, iniciando sin datos en la nube");
+                resolve();
+            }
+        }, 100);
     });
 }
