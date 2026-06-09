@@ -128,6 +128,21 @@
         </div>
     </div>
 
+    <!-- Modal de confirmación genérico (reemplaza confirm() nativo) -->
+    <div id="generic-confirm-modal" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title-alert" id="generic-confirm-title">⚠️ Confirmación</h3>
+            <p id="generic-confirm-message"></p>
+            <div class="modal-buttons-flex">
+                <button class="btn-cancelar" onclick="cerrarModal('generic-confirm-modal')">Cancelar</button>
+                <button id="generic-confirm-ok" class="btn-success">Sí, continuar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenedor de notificaciones Toast -->
+    <div id="toast-container"></div>
+
     <script async src="js/firebase.js"></script>
     <script src="js/grupos.js"></script>
     <script src="js/storage.js"></script>
