@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Polla Mundialista 2026</title>
-    
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚽</text></svg>">
-    
+
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚽</text></svg>">
+
     <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
 
     <header>
@@ -25,24 +28,26 @@
     <div class="container">
 
         <section id="tab-registro" class="tab-content active-content">
-            
+
             <div class="card">
                 <h3>Añadir Participante</h3>
                 <div class="form-group">
                     <input type="text" id="player-name-input" placeholder="Nombre del amigo, ej: Juan">
                     <button class="btn-success" onclick="registrarJugador()">➕ Registrar</button>
                 </div>
-                
+
                 <div id="delete-player-zone" class="delete-zone-container">
-                    <span class="delete-zone-text">¿Alguien se bajó de la polla?:</span>
-                    <button class="btn-eliminar-player" onclick="eliminarJugadorActual()">🗑️ Eliminar Jugador Seleccionado</button>
+                    <!--  <span class="delete-zone-text">¿Alguien se bajó de la polla?:</span>
+                     <button class="btn-eliminar-player" onclick="eliminarJugadorActual()">🗑️ Eliminar Jugador
+                        Seleccionado</button> -->
                 </div>
             </div>
 
             <div class="card">
                 <h3>Selecciona un Amigo para Gestionar su Polla</h3>
-                <select id="select-player" onchange="cargarPrediccionesJugador()" title="Seleccionar participante de la polla">
-                    </select>
+                <select id="select-player" onchange="cargarPrediccionesJugador()"
+                    title="Seleccionar participante de la polla">
+                </select>
             </div>
 
             <div id="grupos-container" class="hidden">
@@ -81,7 +86,7 @@
                         </tr>
                     </thead>
                     <tbody id="ranking-body">
-                        </tbody>
+                    </tbody>
                 </table>
             </div>
         </section>
@@ -90,11 +95,12 @@
             <div class="card">
                 <h3>⚙️ Consola del Administrador</h3>
                 <p class="admin-instruction-text">
-                    A medida que terminen los partidos en el torneo real este mes, marca aquí los <b>2 clasificados oficiales</b> de cada grupo y calcula el puntaje global.
+                    A medida que terminen los partidos en el torneo real este mes, marca aquí los <b>2 clasificados
+                        oficiales</b> de cada grupo y calcula el puntaje global.
                 </p>
-                
+
                 <div id="lista-grupos-reales">
-                    </div>
+                </div>
 
                 <div class="admin-actions-footer">
                     <button class="btn-success btn-calculate-global" onclick="calcularPuntajesGlobales()">
@@ -123,7 +129,7 @@
                 <h3>Cartilla de: <span id="detail-player-name" class="highlight">---</span></h3>
                 <button class="btn-cancelar btn-close-modal" onclick="cerrarModal('detail-modal')">✕ Cerrar</button>
             </div>
-            
+
             <div id="detail-groups-grid" class="grid-modal-groups"></div>
         </div>
     </div>
@@ -148,4 +154,5 @@
     <script src="js/storage.js"></script>
     <script src="js/app.js"></script>
 </body>
+
 </html>

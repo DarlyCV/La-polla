@@ -337,7 +337,7 @@ function cargarPrediccionesJugador() {
         } else {
             botonesDiv.innerHTML = `
                 <span class="msg-fijado">Selección fijada.</span>
-                <button class="btn-modificar" onclick="habilitarModificacion(this, '${nombreGrupo}')">Modificar Selección</button>
+               <!-- <button class="btn-modificar" onclick="habilitarModificacion(this, '${nombreGrupo}')">Modificar Selección</button> -->
             `;
         }
 
